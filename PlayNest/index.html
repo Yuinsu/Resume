@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>PlayNest - 게임 플랫폼</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background-color: #111;
+      color: #eee;
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background-color: #1c1c1c;
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 2px solid #333;
+      position: relative;
+      padding-left: 80px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: #fff;
+      user-select: none;
+    }
+    .logo img {
+      height: 60px;
+      display: block;
+      user-select: none;
+      border-radius: 50%;
+    }
+    .logo h1 {
+      margin: 0;
+      font-weight: 900;
+      font-size: 36px;
+      transform: skew(-12deg);
+      letter-spacing: 1.5px;
+    }
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      padding: 40px;
+      gap: 40px;
+    }
+    .left-section {
+      width: 70%;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+    .game-thumbnails {
+      display: flex;
+      gap: 25px;
+      height: 250px;
+    }
+    .thumb-item {
+      position: relative;
+      flex: 1;
+      border-radius: 15px;
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0,255,213,0.3);
+      transition: transform 0.3s ease, filter 0.3s ease;
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      text-decoration: none;
+    }
+    .thumb-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+    .thumb-label {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.6);
+      padding: 6px 15px;
+      border-radius: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #00ffd5;
+      white-space: nowrap;
+    }
+    .thumb-item:hover {
+      transform: scale(1.05);
+      filter: brightness(0.85);
+    }
+    .thumb-item:hover img {
+      transform: scale(1.1);
+    }
+    .right-section {
+      width: 25%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .login-box,
+    .board {
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .login-box h3,
+    .board h4 {
+      margin-bottom: 10px;
+      color: #00ffd5;
+    }
+    .login-box input {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      background: #111;
+      border: 1px solid #555;
+      color: white;
+      border-radius: 5px;
+    }
+    .login-box button {
+      width: 100%;
+      padding: 10px;
+      background: #00ffd5;
+      border: none;
+      color: #000;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .login-links {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 12px;
+    }
+    .login-links a {
+      color: #bbb;
+      text-decoration: none;
+      margin: 0 5px;
+      transition: color 0.2s;
+    }
+    .login-links a:hover {
+      color: #00ffd5;
+    }
+    footer {
+      background-color: #1c1c1c;
+      padding: 20px 40px;
+      color: #aaa;
+      font-size: 13px;
+      border-top: 2px solid #333;
+      text-align: center;
+    }
+    .footer-menu {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+      margin: 10px 0;
+    }
+    .footer-menu a {
+      color: #ccc;
+      text-decoration: none;
+      transition: 0.2s;
+      font-weight: 500;
+    }
+    .footer-menu a:hover {
+      color: #00ffd5;
+    }
+    .footer-bottom {
+      font-size: 12px;
+      color: #666;
+    }
+    .menu-icon {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 30px;
+      height: 25px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      z-index: 1001;
+    }
+    .menu-icon .bar {
+      height: 3px;
+      width: 100%;
+      background-color: #eee;
+      border-radius: 2px;
+      transition: background-color 0.3s;
+    }
+    .menu-icon:hover .bar {
+      background-color: #00ffd5;
+    }
+    .side-menu {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 220px;
+      height: 100vh;
+      background-color: #222;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.7);
+      transform: translateX(-230px);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    .side-menu.active {
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="menu-icon" id="menu-icon" aria-label="메뉴 열기" role="button" tabindex="0" aria-expanded="false">
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+  </div>
+
+  <header>
+    <a href="/" class="logo" aria-label="PlayNest 홈으로 이동">
+      <img src="img/PN.png" alt="PlayNest 로고" />
+      <h1>PlayNest</h1>
+    </a>
+  </header>
+
+  <div class="container">
+    <div class="left-section">
+      <div class="game-thumbnails">
+        <a href="rpg.html" class="thumb-item" title="RPG 장르">
+          <img src="img/Rpg.jpg" alt="RPG 장르 대표 이미지" />
+          <div class="thumb-label">RPG</div>
+        </a>
+        <a href="fps.html" class="thumb-item" title="FPS 장르">
+          <img src="img/fps.jpg" alt="FPS 장르 대표 이미지" />
+          <div class="thumb-label">FPS</div>
+        </a>
+        <a href="board.html" class="thumb-item" title="보드 장르">
+          <img src="img/board.jpg" alt="보드 장르 대표 이미지" />
+          <div class="thumb-label">보드</div>
+        </a>
+        <a href="sports.html" class="thumb-item" title="스포츠 장르">
+          <img src="img/soccer.jpg" alt="스포츠 장르 대표 이미지" />
+          <div class="thumb-label">스포츠</div>
+        </a>
+      </div>
+    </div>
+    <div class="right-section">
+      <div class="login-box" id="login-box">
+        <h3>로그인</h3>
+        <input type="text" id="login-id" placeholder="아이디" />
+        <input type="password" id="login-pw" placeholder="비밀번호" />
+        <button type="button" id="login-btn">로그인</button>
+        <div class="login-links">
+          <a href="signup.html">회원가입</a> |
+          <a href="find_id.html">아이디 찾기</a> |
+          <a href="find_pw.html">비밀번호 찾기</a>
+        </div>
+      </div>
+      <div class="login-box" id="welcome-box" style="display:none;">
+        <h3 id="welcome-msg">환영합니다!</h3>
+        <button type="button" id="logout-btn">로그아웃</button>
+      </div>
+      <div class="board">
+        <h4>📢 공지사항</h4>
+        <ul>
+          <li>6월 업데이트 안내</li>
+          <li>신규 게임 출시</li>
+        </ul>
+      </div>
+      <div class="board">
+        <h4>💬 자유게시판</h4>
+        <ul>
+          <li>좋아하는 장르 뭐에요?</li>
+          <li>버그 제보합니다</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-top">㈜ PlayNest | 대표이사 홍길동 | 인천광역시 어쩌고 저쩌고</div>
+    <div class="footer-menu">
+      <a href="#">찾아오시는길</a>
+      <a href="#">광고문의</a>
+      <a href="#">채용안내</a>
+      <a href="#">고객센터</a>
+      <a href="#">이용약관</a>
+      <a href="#">개인정보처리방침</a>
+    </div>
+    <div class="footer-bottom">© 2025 PlayNest. All rights reserved.</div>
+  </footer>
+
+  <script>
+    const loginBtn = document.getElementById("login-btn");
+    const logoutBtn = document.getElementById("logout-btn");
+    const loginBox = document.getElementById("login-box");
+    const welcomeBox = document.getElementById("welcome-box");
+    const welcomeMsg = document.getElementById("welcome-msg");
+
+    loginBtn.addEventListener("click", () => {
+      const inputId = document.getElementById("login-id").value;
+      const inputPw = document.getElementById("login-pw").value;
+      const savedUser = JSON.parse(localStorage.getItem("userInfo"));
+
+      if (!savedUser) {
+        alert("회원가입 정보가 없습니다. 먼저 회원가입을 해주세요.");
+        return;
+      }
+
+      if (inputId === savedUser.id && inputPw === savedUser.pw) {
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("nickname", savedUser.nickname);
+        localStorage.setItem("profile", "img/profile.jpg");
+        location.reload();
+      } else {
+        alert("아이디 또는 비밀번호가 틀렸습니다.");
+      }
+    });
+
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("isLoggedIn");
+      location.reload();
+    });
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+      const nickname = localStorage.getItem("nickname") || "";
+      const profile = localStorage.getItem("profile") || "";
+
+      if (isLoggedIn) {
+        loginBox.style.display = "none";
+        welcomeBox.style.display = "block";
+        welcomeMsg.innerHTML = `<img src="${profile}" alt="프로필" style="width:30px;height:30px;border-radius:50%;vertical-align:middle;margin-right:8px;"> <strong>${nickname}</strong>님 환영합니다!`;
+      }
+    });
+
+    const menuIcon = document.getElementById("menu-icon");
+    const sideMenu = document.createElement("div");
+    sideMenu.className = "side-menu";
+    sideMenu.innerHTML = `
+      <ul style="padding:20px; list-style:none; color:#eee;">
+        <li style="margin-bottom:15px; font-weight:bold; font-size:15px;"></li>
+        <li style="margin-bottom:10px;">RPG</li>
+        <li style="margin-bottom:10px;">FPS</li>
+        <li style="margin-bottom:10px;">보드</li>
+        <li style="margin-bottom:10px;">스포츠</li>
+      </ul>`;
+    document.body.appendChild(sideMenu);
+
+    menuIcon.addEventListener("mouseenter", () => {
+      sideMenu.classList.add("active");
+    });
+
+    sideMenu.addEventListener("mouseleave", () => {
+      sideMenu.classList.remove("active");
+    });
+  </script>
+</body>
+</html>

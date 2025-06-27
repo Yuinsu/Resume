@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>비밀번호 찾기 / 변경 - PlayNest</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #eee;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      gap: 15px;
+      padding: 20px;
+    }
+    input, button {
+      padding: 12px;
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
+    }
+    input {
+      background: #222;
+      color: #eee;
+      border: 1px solid #555;
+      width: 320px;
+    }
+    button {
+      background: #00ffd5;
+      font-weight: bold;
+      color: #000;
+      cursor: pointer;
+      width: 140px;
+    }
+    button:hover {
+      background: #00ccb0;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #00ffd5;
+      white-space: pre-wrap;
+      text-align: center;
+      max-width: 320px;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <h2>비밀번호 찾기 및 변경</h2>
+
+  <form id="pw-form">
+    <input type="text" id="userid" placeholder="아이디 입력" required />
+    <input type="email" id="email" placeholder="가입한 이메일 입력" required />
+    <button type="button" id="find-btn">비밀번호 찾기</button>
+
+    <input type="password" id="new-pw" placeholder="새 비밀번호 입력" style="display:none;" />
+    <input type="password" id="confirm-new-pw" placeholder="새 비밀번호 확인" style="display:none;" />
+    <button type="submit" id="change-btn" style="display:none; width: 150px;">비밀번호 변경하기</button>
+  </form>
+
+  <div id="result"></div>
+
+  <script>
+    const findBtn = document.getElementById('find-btn');
+    const changeBtn = document.getElementById('change-btn');
+    const newPwInput = document.getElementById('new-pw');
+    const confirmNewPwInput = document.getElementById('confirm-new-pw');
+    const resultBox = document.getElementById('result');
+
+    let foundUserKey = null;
+
+    findBtn.addEventListener('click', () => {
+      const inputID = document.getElementById("userid").value.trim();
+      const inputEmail = document.getElementById("email").value.trim();
+      resultBox.innerText = '';
+      if (!inputID || !inputEmail) {
+        alert("아이디와 이메일을 모두 입력하세요.");
+        return;
+      }
+
+      const userData = localStorage.getItem("user_" + inputID);
+      if (!userData) {
+        resultBox.innerText = "등록된 아이디가 없습니다.";
+        foundUserKey = null;
+        hideChangePwInputs();
+        return;
+      }
+      const user = JSON.parse(userData);
+
+      if (user.email !== inputEmail) {
+        resultBox.innerText = "입력한 이메일이 가입된 이메일과 다릅니다.";
+        foundUserKey = null;
+        hideChangePwInputs();
+        return;
+      }
+
+      // 아이디와 이메일 모두 일치
+      resultBox.innerText = "회원님 확인되었습니다.\n아래에서 새 비밀번호를 입력해주세요.";
+      foundUserKey = "user_" + inputID;
+
+      // 새 비밀번호 입력 필드 보이기
+      showChangePwInputs();
+    });
+
+    function showChangePwInputs() {
+      newPwInput.style.display = 'block';
+      confirmNewPwInput.style.display = 'block';
+      changeBtn.style.display = 'inline-block';
+    }
+
+    function hideChangePwInputs() {
+      newPwInput.style.display = 'none';
+      confirmNewPwInput.style.display = 'none';
+      changeBtn.style.display = 'none';
+      newPwInput.value = '';
+      confirmNewPwInput.value = '';
+    }
+
+    document.getElementById('pw-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!foundUserKey) {
+        alert("먼저 아이디와 이메일을 확인해주세요.");
+        return;
+      }
+      const newPw = newPwInput.value;
+      const confirmPw = confirmNewPwInput.value;
+      if (!newPw || !confirmPw) {
+        alert("새 비밀번호와 확인 비밀번호를 모두 입력하세요.");
+        return;
+      }
+      if (newPw !== confirmPw) {
+        alert("새 비밀번호가 일치하지 않습니다.");
+        return;
+      }
+
+      // 비밀번호 변경 처리
+      const user = JSON.parse(localStorage.getItem(foundUserKey));
+      user.pw = newPw;
+      localStorage.setItem(foundUserKey, JSON.stringify(user));
+
+      resultBox.innerText = "비밀번호가 성공적으로 변경되었습니다.";
+      hideChangePwInputs();
+      document.getElementById('userid').value = '';
+      document.getElementById('email').value = '';
+    });
+  </script>
+</body>
+</html>

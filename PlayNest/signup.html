@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>회원가입 - PlayNest</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #eee;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .signup-container {
+      background-color: #1c1c1c;
+      padding: 30px;
+      border-radius: 10px;
+      width: 420px;
+      box-shadow: 0 0 10px rgba(0,255,213,0.2);
+    }
+
+    .signup-container h2 {
+      text-align: center;
+      color: #00ffd5;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group input {
+      width: calc(100% - 22px);
+      padding: 10px;
+      background: #111;
+      border: 1px solid #555;
+      color: #fff;
+      border-radius: 5px;
+    }
+
+    .email-wrapper {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .email-wrapper input[type="email"] {
+      flex: 1;
+    }
+
+    .email-wrapper button {
+      padding: 10px;
+      background: #00ffd5;
+      color: #000;
+      border: none;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      background: #00ffd5;
+      color: #000;
+      border: none;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .signup-links {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 13px;
+    }
+
+    .signup-links a {
+      color: #bbb;
+      text-decoration: none;
+      margin: 0 5px;
+    }
+
+    .signup-links a:hover {
+      color: #00ffd5;
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-container">
+    <h2>회원가입</h2>
+    <form id="signup-form">
+      <div class="form-group">
+        <input type="text" id="userid" placeholder="아이디" required />
+      </div>
+      <div class="form-group">
+        <input type="password" id="password" placeholder="비밀번호" required />
+      </div>
+      <div class="form-group">
+        <input type="password" id="confirm-password" placeholder="비밀번호 확인" required />
+      </div>
+      <div class="email-wrapper">
+        <input type="email" id="email" placeholder="이메일 입력" required />
+        <button type="button" onclick="sendCode()">인증번호 발송</button>
+      </div>
+      <div class="form-group">
+        <input type="text" id="email-code" placeholder="인증번호 입력" required />
+      </div>
+      <div class="form-group">
+        <input type="text" id="nickname" placeholder="닉네임" required />
+      </div>
+      <button type="submit">회원가입</button>
+    </form>
+    <div class="signup-links">
+      <a href="index.html">로그인</a> |
+      <a href="find_id.html">아이디 찾기</a> |
+      <a href="find_pw.html">비밀번호 찾기</a>
+    </div>
+  </div>
+
+  <script>
+    let randomCode = "";
+
+    function sendCode() {
+      randomCode = Math.floor(100000 + Math.random() * 900000).toString();
+      alert("인증번호: " + randomCode); // 실제로는 이메일로 전송해야 함
+    }
+
+    document.getElementById("signup-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const id = document.getElementById("userid").value;
+      const pw = document.getElementById("password").value;
+      const cpw = document.getElementById("confirm-password").value;
+      const email = document.getElementById("email").value;
+      const code = document.getElementById("email-code").value;
+      const nick = document.getElementById("nickname").value;
+
+      if (pw !== cpw) {
+        alert("비밀번호가 일치하지 않습니다.");
+        return;
+      }
+
+      if (code !== randomCode) {
+        alert("인증번호가 올바르지 않습니다.");
+        return;
+      }
+
+      const user = {
+        id: id,
+        pw: pw,
+        email: email,
+        nickname: nick
+      };
+
+      localStorage.setItem("user_" + id, JSON.stringify(user));
+      alert("회원가입이 완료되었습니다.");
+      window.location.href = "index.html";
+    });
+  </script>
+</body>
+</html>

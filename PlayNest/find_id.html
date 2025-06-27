@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>아이디 찾기 - PlayNest</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #eee;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      gap: 15px;
+    }
+    input, button {
+      padding: 12px;
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
+    }
+    input {
+      background: #222;
+      color: #eee;
+      border: 1px solid #555;
+      width: 300px;
+    }
+    button {
+      background: #00ffd5;
+      font-weight: bold;
+      color: #000;
+      cursor: pointer;
+      width: 150px;
+    }
+    button:hover {
+      background: #00ccb0;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #00ffd5;
+    }
+  </style>
+</head>
+<body>
+  <input type="email" id="email" placeholder="가입한 이메일 입력" required />
+  <button onclick="findID()">아이디 찾기</button>
+  <div id="result"></div>
+
+  <script>
+    function findID() {
+      const inputEmail = document.getElementById("email").value.trim();
+      if (!inputEmail) {
+        alert("이메일을 입력하세요.");
+        return;
+      }
+      let foundID = null;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith("user_")) {
+          const user = JSON.parse(localStorage.getItem(key));
+          if (user.email === inputEmail) {
+            foundID = user.id;
+            break;
+          }
+        }
+      }
+      const resultBox = document.getElementById("result");
+      if (foundID) {
+        resultBox.innerText = `가입된 아이디: ${foundID}`;
+      } else {
+        resultBox.innerText = "해당 이메일로 등록된 아이디가 없습니다.";
+      }
+    }
+  </script>
+</body>
+</html>
